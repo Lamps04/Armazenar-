@@ -1,5 +1,5 @@
 
-/**Aqui é importdo a biblioteca de ArrayList do Java.
+/**Aqui é importado a biblioteca de ArrayList do Java.
 E onde serão criados os métodos de adicionar itens ao estoque.
 */
 import java.util.ArrayList;
