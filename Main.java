@@ -1,91 +1,195 @@
+import java.io.*;
+import java.util.ArrayList;
+import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
+    private static final String NOTAS = "produtos.txt";
+    private static List<Produto> produtos = new ArrayList<>();
+    private static Scanner scanner = new Scanner(System.in);
+    private static int nextId = 1;  
+
     public static void main(String[] args) {
-        Estoque estoque = new Estoque();
-        Scanner scanner = new Scanner(System.in);
-        boolean continuar = true;
+        carregarProdutos(); 
+        String logo = """
+            $$$$$$\\  $$$$$$$\\   $$\\      $$\\  $$$$$$\\  $$$$$$$$\\ $$$$$$$$\\ $$\\   $$\\  $$$$$$\\  $$$$$$$\\            
+           $$  __$$\\ $$  __$$\\  $$$\\    $$$$ |$$  __$$\\ \\____$$  |$$  _____|$$$\\  $$ |$$  __$$\\ $$  __$$\\    $$\\    
+           $$ /  $$ |$$ |  $$   |$$$$\\  $$$$ |$$ /  $$ |    $$  / $$ |      $$$$\\ $$ |$$ /  $$ |$$ |  $$ |   $$ |   
+           $$$$$$$$ |$$$$$$$    |$$\\$$\\$$ $$ |$$$$$$$$$    $$  /  $$$$$\\    $$ $$\\$$ |$$$$$$$$$|$$$$$$$  |$$$$$$$$\\ 
+           $$  __$$ |$$  __$$<   $$ \\$$$  $$ |$$  __$$ |  $$  /   $$  __|   $$ \\$$$$ |$$  __$$ |$$  __$$< \\__$$  __| 
+           $$ |  $$ |$$ |  $$ |  $$ |\\$  /$$ |$$ |  $$ | $$  /    $$ |      $$ |\\$$$ |$$ |  $$ |$$ |  $$ |   $$ |   
+           $$ |  $$ |$$ |  $$ |  $$ | \\_/ $$ |$$ |  $$ |$$$$$$$$$\\ $$$$$$$$\\$$ | \\$$ |$$ |  $$ |$$ |  $$ |   \\__|   
+           \\__|  \\__|\\__|\\  __|\\__|     \\__|\\__|  \\__|\\________|\\________|\\__|  \\__|\\__|  \\__|\\__|  \\__|          
+           
+           """;
+           System.out.println(logo);
+       int opcao;
+       do {
 
-        // Adicionando itens ao estoque o sistema gera ID automaticamente
-        estoque.adicionarItem("Fita Isolante 3M", "Feito de PVC, bom isolante elétrico.", 10, 5.99);
-        estoque.adicionarItem("Caixa d'água", "Cx 1500L", 0, 1130.0);
-        estoque.adicionarItem("Chuveiro", "Alta pressão", 5, 1200.0);
-        estoque.adicionarItem("Fio Flexível", "Rolo de 100m", 100, 189.90);
-
-        while (continuar) {
-            // Exibir o menu de opções
             System.out.println("\n=== Menu de Estoque Armazenar+ ===");
-            System.out.println("1. Adicionar item ao estoque");
-            System.out.println("2. Atualizar quantidade de item");
-            System.out.println("3. Remover item do estoque");
-            System.out.println("4. Mostrar estoque completo");
-            System.out.println("5. Buscar item pelo ID");
-            System.out.print("Escolha uma opção: ");
-
-            int opcao = scanner.nextInt();
-
+            System.out.println("1. Cadastrar produto");
+            System.out.println("2. Mostrar Estoque");
+            System.out.println("3. Deletar produto");
+            System.out.println("4. Buscar item pelo ID");
+            System.out.println("5. Sair\n");
+            System.out.print("Opção: ");
+            opcao = scanner.nextInt();
+            scanner.nextLine();
             switch (opcao) {
                 case 1:
-                    // Adicionar item ao estoque
-                    System.out.println("Adicionar item:");
-                    scanner.nextLine(); // Consumir nova linha
-                    System.out.print("Digite o nome: ");
-                    String nome = scanner.nextLine();
-                    System.out.print("Digite a descrição: ");
-                    String descricao = scanner.nextLine();
-                    System.out.print("Digite a quantidade: ");
-                    int quantidade = scanner.nextInt();
-                    System.out.print("Digite o preço: ");
-                    double preco = scanner.nextDouble();
-                    estoque.adicionarItem(nome, descricao, quantidade, preco);
+                    cadastrarProduto();
                     break;
                 case 2:
-                    // Atualizar quantidade de um item
-                    System.out.println("Atualizar quantidade de item:");
-                    System.out.print("Digite o ID do item: ");
-                    int idAtualizar = scanner.nextInt();
-                    System.out.print("Digite a nova quantidade: ");
-                    int novaQuantidade = scanner.nextInt();
-                    estoque.atualizarQuantidade(idAtualizar, novaQuantidade);
+                    mostrarEstoque();
                     break;
                 case 3:
-                    // Remover item do estoque
-                    System.out.print("Digite o ID do item que deseja remover: ");
-                    int idRemover = scanner.nextInt();
-                    estoque.removerItem(idRemover);
+                    deletarProduto();
                     break;
                 case 4:
-                    // Mostrar estoque completo
-                    System.out.println("=== Estoque Atual ===");
-                    estoque.mostrarEstoque();
+                    buscarID();
                     break;
                 case 5:
-                    // Buscar item pelo ID
-                    System.out.print("Digite o ID do item que deseja buscar: ");
-                    int idBuscar = scanner.nextInt();
-                    ItemEstoque itemBuscado = estoque.buscarItemPorId(idBuscar);
-                    if (itemBuscado != null) {
-                        System.out.println("Item encontrado: " + itemBuscado.getNome() + " | Quantidade: "
-                                + itemBuscado.getQuantidade());
-                    } else {
-                        System.out.println("Item não encontrado.");
-                    }
+                    System.out.println("Encerrando o programa...");
                     break;
                 default:
                     System.out.println("Opção inválida. Tente novamente.");
-                    break;
             }
+        } while (opcao != 5);
+        scanner.close();
+    }
 
-            // Perguntar ao usuário se deseja voltar ao menu
-            System.out.print("\nDeseja voltar para o menu? (S para Sim / N para Não): ");
-            char voltarMenu = scanner.next().charAt(0);
-            if (voltarMenu == 'N' || voltarMenu == 'n') {
-                continuar = false;
-                System.out.println("Programa encerrado.");
+    private static void cadastrarProduto() {
+        System.out.print("Nome do produto: ");
+        String nome = scanner.next();
+        
+        System.out.print("Preço: ");
+        double preco = 0;
+        while (true) {
+            try {
+                preco = scanner.nextDouble();
+                scanner.nextLine(); 
+                break;
+            } catch (InputMismatchException e) {
+                System.out.println("Por favor, insira um valor numérico para o preço.");
+                scanner.next(); 
             }
         }
 
-        // Fechando o Scanner para liberar recursos
-        scanner.close();
+        System.out.print("Descrição do produto: ");
+        String descricao = scanner.nextLine(); 
+
+        System.out.print("Digite a quantidade em estoque: ");
+        double quantidade = 0;
+        while (true) {
+            try {
+                quantidade = scanner.nextDouble();
+                scanner.nextLine(); 
+                break;
+            } catch (InputMismatchException e) {
+                System.out.println("Por favor, insira um valor numérico para a quantidade.");
+                scanner.next(); 
+            }
+        }
+        
+        Produto novoProduto = new Produto(nome, preco, descricao, quantidade);
+        novoProduto.setId(nextId++);
+        produtos.add(novoProduto);
+        salvarProdutos();
+        System.out.println("Produto cadastrado com sucesso!");
+        System.out.println("\nPressione Enter para voltar ao menu...");
+        scanner.nextLine();
+    }
+
+    private static void mostrarEstoque() {
+        if (produtos.isEmpty()) {
+            System.out.println("Estoque vazio");
+        } else {
+            System.out.println("\n=== Estoque de produtos ===");
+            for (Produto produto : produtos) {
+                System.out.println("ID: " + produto.getId() + " - " + produto.getNome() + " - R$" + produto.getPreco() + 
+                " - " + produto.getDescricao());
+            }
+        }
+
+        System.out.println("\nPressione Enter para voltar ao menu...");
+        scanner.nextLine();
+    }
+
+    private static void deletarProduto() {
+        System.out.print("Digite o ID do produto a ser deletado: ");
+        int id = scanner.nextInt();
+        scanner.nextLine();
+        Produto produtoEncontrado = buscarProdutoPorId(id);
+    
+        if (produtoEncontrado != null) {
+            produtos.remove(produtoEncontrado);
+            salvarProdutos();
+            System.out.println("Produto removido com sucesso!");
+        } else {
+            System.out.println("Produto com ID " + id + " não encontrado.");
+        }
+    
+        System.out.println("\nPressione Enter para voltar ao menu...");
+        scanner.nextLine();
+    }
+    
+    private static void buscarID() {
+        System.out.print("Digite o ID do produto a ser buscado: ");
+        int id = scanner.nextInt();
+        scanner.nextLine();
+        Produto produto = buscarProdutoPorId(id);
+    
+        if (produto != null) {
+            System.out.println("Produto encontrado: " + produto);
+        } else {
+            System.out.println("\nProduto com ID " + id + " não encontrado.");
+        }
+    
+        System.out.println("\nPressione Enter para voltar ao menu...");
+        scanner.nextLine();
+    }
+    
+    private static Produto buscarProdutoPorId(int id) {
+        for (Produto produto : produtos) {
+            if (produto.getId() == id) {
+                return produto;
+            }
+        }
+        return null;
+    }
+
+    public static void carregarProdutos() {
+        try (BufferedReader reader = new BufferedReader(new FileReader(NOTAS))) {
+            String linha;
+            while ((linha = reader.readLine()) != null) {
+                String[] dados = linha.split(";");
+    
+                if (dados.length >= 5) {
+                    Produto produto = new Produto(dados[1], Double.parseDouble(dados[2]), dados[3], Double.parseDouble(dados[4]));
+                    produto.setId(Integer.parseInt(dados[0]));
+                    produtos.add(produto);
+                    nextId = Math.max(nextId, produto.getId() + 1);
+                } else {
+                    System.out.println("Linha inválida: " + linha);
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Erro ao carregar os produtos: " + e.getMessage());
+        } catch (NumberFormatException e) {
+            System.out.println("Erro ao converter valores: " + e.getMessage());
+        }
+    }
+    
+    public static void salvarProdutos() {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(NOTAS))) {
+            for (Produto produto : produtos) {
+                writer.write(produto.getId() + ";" + produto.getNome() + ";" + produto.getPreco() + ";" + produto.getDescricao() + ";" + produto.getQuantidade());
+                writer.newLine(); 
+            }
+            System.out.println("Produtos salvos com sucesso!");
+        } catch (IOException e) {
+            System.out.println("Erro ao salvar os produtos: " + e.getMessage());
+        }
     }
 }
