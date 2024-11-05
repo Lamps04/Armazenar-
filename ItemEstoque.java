@@ -1,4 +1,4 @@
-/**
+/** Essa classe que representava um item em estoque, foi inutilizada no versionamento seguinte do código. Atualmente INUTILIZADA.
  * Classe que representa um produto no armazém.
  * Atributos em private (encapsulados)
  * para somente a classe ItemEstoque acessar.
